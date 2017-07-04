@@ -29,7 +29,7 @@ class LearningAgent(Agent):
         """ The reset function is called at the beginning of each trial.
             'testing' is set to True if testing trials are being used
             once training trials have completed. """
-        import math
+        
         # Select the destination as the new location to route to
         self.planner.route_to(destination)
         
@@ -43,7 +43,7 @@ class LearningAgent(Agent):
             self.epsilon =0
             self.alpha=0
         else:
- #           self.epsilon = self.epsilon-.05
+ #            self.epsilon = self.epsilon-.05
                 
              self.epsilon=math.exp(-.01*trial)
 #             self.epsilon=math.cos(.003*trial)
@@ -76,14 +76,7 @@ class LearningAgent(Agent):
         ########### 
         ## TO DO ##
         ###########
-        q=[]
-        # Calculate the maximum Q-value of all actions for a given state
-        for action,Q_value in self.Q[state].iteritems():
-            q.append(Q_value)
-            #print(action)
-        
-        maxQ = max(q)
-        #print(action,q)
+        maxQ = max(self.Q[state].values())
         return maxQ 
 
 
@@ -119,7 +112,7 @@ class LearningAgent(Agent):
         if self.learning:
             if random.random() < self.epsilon:
                 #explore
-                action = random.choice([None,'right','left','forward'])
+                action = random.choice(self.valid_actions)
                 
             else:
                 
@@ -128,7 +121,7 @@ class LearningAgent(Agent):
                 
                 
         else:
-            action = random.choice([None,'right','left','forward'])
+            action = random.choice(self.valid_actions)
             
             
         
@@ -154,15 +147,9 @@ class LearningAgent(Agent):
         # When learning, implement the value iteration update rule
         #   Use only the learning rate 'alpha' (do not use the discount factor 'gamma')
         
-        q=self.Q[state][action]
+        if self.learning:
+            self.Q[state][action]=(1-self.alpha)*self.Q[state][action] + self.alpha*reward
         
-        
-        new_q=(1-self.alpha)*q + self.alpha*reward
-        self.Q[state][action]=new_q
-
-
-        
-
         return
 
 
